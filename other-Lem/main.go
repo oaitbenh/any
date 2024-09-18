@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"sort"
 
 	utils "lem_in/utils"
 )
@@ -17,20 +18,41 @@ func main() {
 	fmt.Println(StartRoom)
 	fmt.Println(EndRoom)
 	fmt.Println(AntsNumber)
-	fmt.Println(DFSearch(StartRoom[0], EndRoom[0], []string{}, GraphMap, [][]string{}, map[string]bool{}))
+	AllPaths := utils.DFSearch(StartRoom[0], EndRoom[0], []string{}, GraphMap, [][]string{})
+	sort.Slice(AllPaths, func(i, j int) bool {
+		return len(AllPaths[i]) < len(AllPaths[j])
+	})
+	fmt.Println(AllPaths)
+	ShortestPaths := GetShortestPaths(AllPaths)
+	sort.Slice(ShortestPaths, func(i, j int) bool {
+		return len(AllPaths[i]) < len(AllPaths[j])
+	})
+	fmt.Println(ShortestPaths)
 }
 
-func DFSearch(StartRoom, EndRoom string, Path []string, GraphMap map[string][]string, Result [][]string, Visited map[string]bool) [][]string {
-	Visited[StartRoom] = true
-	Path = append(Path, StartRoom)
-	if StartRoom == EndRoom {
-		PathCopy := make([]string, len(Path))
-		copy(PathCopy, Path)
-		return append(Result, PathCopy)
+func GetShortestPaths(AllPaths [][]string) (ShortestPaths [][]string) {
+	for i := len(AllPaths) - 1; i >= 0; i-- {
+		AppendIt := true
+		for j := i - 1; j >= 0; j-- {
+			if MatchAnyRoom(AllPaths[i], AllPaths[j]) {
+				AppendIt = false
+				break
+			}
+		}
+		if AppendIt {
+			ShortestPaths = append(ShortestPaths, AllPaths[i])
+		}
 	}
-	for _, RoomToGo := range GraphMap[StartRoom] {
-		Result = DFSearch(RoomToGo, EndRoom, Path, GraphMap, Result, Visited)
-		Path = Path[:len(Path)-1]
+	return
+}
+
+func MatchAnyRoom(RoomsOne, RoomsTwo []string) bool {
+	for i := 1; i < len(RoomsOne)-1; i++ {
+		for j := 1; j < len(RoomsTwo)-1; j++ {
+			if RoomsOne[i] == RoomsTwo[j] && i != 0 && i != len(RoomsOne)-1 {
+				return true
+			}
+		}
 	}
-	return Result
+	return false
 }
