@@ -1,6 +1,5 @@
 10
 ##start
-start 1 6
 0 4 8
 o 6 8
 n 6 6

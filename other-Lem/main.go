@@ -19,22 +19,24 @@ func main() {
 	fmt.Println(EndRoom)
 	fmt.Println(AntsNumber)
 	AllPaths := utils.DFSearch(StartRoom[0], EndRoom[0], []string{}, GraphMap, [][]string{})
+	ShortestWhitoutSort := GetShortestPaths(AllPaths)
 	sort.Slice(AllPaths, func(i, j int) bool {
 		return len(AllPaths[i]) < len(AllPaths[j])
 	})
-	fmt.Println(AllPaths)
 	ShortestPaths := GetShortestPaths(AllPaths)
-	sort.Slice(ShortestPaths, func(i, j int) bool {
-		return len(AllPaths[i]) < len(AllPaths[j])
-	})
-	fmt.Println(ShortestPaths)
+	if len(ShortestWhitoutSort) > len(ShortestPaths) {
+		fmt.Println(ShortestWhitoutSort)
+	} else {
+		fmt.Println(ShortestPaths)
+	}
 }
 
 func GetShortestPaths(AllPaths [][]string) (ShortestPaths [][]string) {
-	for i := len(AllPaths) - 1; i >= 0; i-- {
+	PathsLenght := len(AllPaths)
+	for i := 0; i < PathsLenght; i++ {
 		AppendIt := true
-		for j := i - 1; j >= 0; j-- {
-			if MatchAnyRoom(AllPaths[i], AllPaths[j]) {
+		for j := 0; j < len(ShortestPaths); j++ {
+			if MatchAnyRoom(AllPaths[i], ShortestPaths[j]) {
 				AppendIt = false
 				break
 			}
