@@ -25,10 +25,27 @@ func main() {
 	})
 	ShortestPaths := GetShortestPaths(AllPaths)
 	if len(ShortestWhitoutSort) > len(ShortestPaths) {
-		fmt.Println(ShortestWhitoutSort)
-	} else {
-		fmt.Println(ShortestPaths)
+		ShortestPaths = ShortestWhitoutSort
+		sort.Slice(ShortestPaths, func(i, j int) bool {
+			return len(ShortestPaths[i]) < len(ShortestPaths[j])
+		})
 	}
+	fmt.Println(ShortestPaths)
+	AntAndPath := make([][]int, len(ShortestPaths))
+	LenPaths := len(ShortestPaths)
+	i := 1
+	for i <= AntsNumber {
+		for j := 0; j < LenPaths; j++ {
+			if j == LenPaths-1 || len(ShortestPaths[j])+len(AntAndPath[j]) <= len(ShortestPaths[j+1])+len(AntAndPath[j+1]) {
+				AntAndPath[j] = append(AntAndPath[j], i)
+				i++
+				if i > AntsNumber {
+					break
+				}
+			}
+		}
+	}
+	fmt.Println(AntAndPath)
 }
 
 func GetShortestPaths(AllPaths [][]string) (ShortestPaths [][]string) {
